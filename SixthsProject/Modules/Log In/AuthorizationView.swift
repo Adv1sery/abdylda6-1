@@ -1,15 +1,19 @@
 //
-//  ViewController.swift
+//  AuthorizationView.swift
 //  SixthsProject
 //
-//  Created by Abdylda Mamashev on 28/3/24.
+//  Created by Abdylda Mamashev on 1/4/24.
 //
 
 import UIKit
 import SnapKit
 
-class UserAuthorizationViewController: UIViewController {
-    
+protocol UserViewDelegate: AnyObject {
+    func checkLoginButton()
+}
+
+class AuthorizationView: UIView {
+
     private lazy var mainLabel: UILabel = {
         let view = UILabel()
         view.text = "Welcome Back!"
@@ -35,7 +39,7 @@ class UserAuthorizationViewController: UIViewController {
         return view
     }()
 
-    private lazy var firstTF: UITextField = {
+    let firstTF: UITextField = {
         let view = UITextField()
         view.placeholder = "Name"
         view.layer.borderWidth = 1
@@ -50,7 +54,7 @@ class UserAuthorizationViewController: UIViewController {
         return view
     }()
     
-    private lazy var secondTF: UITextField = {
+    let secondTF: UITextField = {
         let view = UITextField()
         view.placeholder = "Surname"
         view.layer.borderWidth = 1
@@ -72,36 +76,42 @@ class UserAuthorizationViewController: UIViewController {
         view.backgroundColor = .orange
         view.layer.cornerRadius = 5
         view.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+        view.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         return view
     }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    weak var delegate: UserViewDelegate?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupConstraints()
-        view.backgroundColor = .systemBackground
-        
+        backgroundColor = .systemBackground
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     func setupConstraints() {
         
-        view.addSubview(mainLabel)
+        addSubview(mainLabel)
         
         mainLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(40)
-            make.leading.equalTo(view.snp.leading).offset(24)
+            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(40)
+            make.leading.equalTo(snp.leading).offset(24)
             make.width.equalTo(336)
             make.height.equalTo(19)
         }
         
-        view.addSubview(secondLabel)
+        addSubview(secondLabel)
         
         secondLabel.snp.makeConstraints { make in
             make.top.equalTo(mainLabel.snp.bottom).offset(20)
-            make.leading.equalTo(view.snp.leading).offset(24)
+            make.leading.equalTo(snp.leading).offset(24)
             make.width.equalTo(337)
         }
         
-        view.addSubview(stackFields)
+        addSubview(stackFields)
         
         stackFields.snp.makeConstraints { make in
             make.top.equalTo(secondLabel.snp.bottom).offset(25)
@@ -120,14 +130,18 @@ class UserAuthorizationViewController: UIViewController {
             make.height.equalTo(55)
         }
         
-        view.addSubview(singleButton)
+       addSubview(singleButton)
         
         singleButton.snp.makeConstraints { make in
             make.top.equalTo(stackFields.snp.bottom).offset(50)
             make.horizontalEdges.equalToSuperview().inset(24)
             make.height.equalTo(50)
         }
-        
     }
-}
 
+    @objc
+    private func loginButtonTapped() {
+        delegate?.checkLoginButton()
+    }
+    
+}
